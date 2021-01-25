@@ -1,3 +1,8 @@
+This is a fork of https://github.com/mnaberez/py65 since the author blocked me
+when I tried to submit a pull request. Please direct any bug reports or pull
+requests to this repository and I will do my best to handle them in a polite
+and respectful fashion.
+
 Py65
 ====
 
