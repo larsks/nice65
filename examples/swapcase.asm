@@ -14,11 +14,11 @@
         .assume BIT32=1032, BIT32R=3210
         .include "i6502.a"
 
-; I/O is memory-mapped in py65:
+; I/O is memory-mapped in nice65:
 PUTC     = $f001
 GETC     = $f004
 
-; the py65 hexload boot ROM will only load to $0200
+; the nice65 hexload boot ROM will only load to $0200
  .ORG $200
 
 another

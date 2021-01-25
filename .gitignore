@@ -11,4 +11,4 @@ build/
 dist/
 env*/
 htmlcov/
-py65.egg-info/
+nice65.egg-info/

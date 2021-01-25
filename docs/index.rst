@@ -1,8 +1,8 @@
-***********************************************
-Py65 - 6502 Microprocessor Simulation in Python
-***********************************************
+*************************************************
+Nice65 - 6502 Microprocessor Simulation in Python
+*************************************************
 
-:Author: Mike Naberezny
+:Author: Lars Kellogg-Stedman
 :Version: |version|
 
 .. topic:: Overview
@@ -15,16 +15,16 @@ Using the Monitor
 Introduction
 ------------
 
-Py65 includes a program called Py65Mon that functions as a machine language
-monitor. This kind of program is sometimes also called a debugger. Py65Mon
-provides a command line with many convenient commands for interacting with the
-simulated 6502-based system.
+Nice65 includes a program called Nice65Mon that functions as a machine
+language monitor. This kind of program is sometimes also called a debugger.
+Nice65Mon provides a command line with many convenient commands for interacting
+with the simulated 6502-based system.
 
-The monitor is started using the ``py65mon`` command::
+The monitor is started using the ``nice65mon`` command::
 
-  $ py65mon
+  $ nice65mon
 
-  Py65 Monitor
+  Nice65 Monitor
 
          PC  AC XR YR SP NV-BDIZC
   6502: 0000 00 00 00 ff 00110000
@@ -33,20 +33,20 @@ The monitor is started using the ``py65mon`` command::
 Once the monitor has started, it will display a register dump and the
 dot prompt.  You can then enter commands for the monitor at this prompt.
 
-Py65Mon uses commands that are very similar to those used by the
-`VICE emulator's monitor <http://vice-emu.sourceforge.net/vice_12.html>`_
+Nice65Mon uses commands that are very similar to those used by the
+`VICE emulator's monitor <https://vice-emu.sourceforge.io/vice_12.html>`_
 for Commodore computers.  You can get a list of available commands
 with ``help`` or help on a specific command with ``help command``.
 
 Number Systems
 --------------
 
-When working with Py65Mon, you will frequently need to enter numbers, addresses,
-and ranges of addresses.  Almost all Py65 command support entering numbers in
+When working with Nice65Mon, you will frequently need to enter numbers, addresses,
+and ranges of addresses.  Almost all Nice65 commands support entering numbers in
 binary, decimal, and hexadecimal.
 
 Numbers can be entered with a prefix to specify the radix, e.g. ``$c000``
-instructs Py65Mon that the number ``c000`` is hexadecimal.  The following
+instructs Nice65Mon that the number ``c000`` is hexadecimal.  The following
 prefixes are supported:
 
 - ``$c000``: The dollar sign indicates hexadecimal.
@@ -320,13 +320,13 @@ Command Reference
 
   .. note::
 
-    Unlike the VICE monitor, Py65Mon's ``load`` command does not expect
+    Unlike the VICE monitor, Nice65Mon's ``load`` command does not expect
     the first two bytes to be a Commodore-style load address.  It will start
     reading the data at byte 0, not byte 2.
 
   If the filename is a URL, it will be retrieved::
 
-    .load https://github.com/mnaberez/py65/raw/0.11/examples/ehbasic.bin 0000
+    .load https://github.com/larsks/nice65/raw/master/examples/ehbasic.bin 0000
     Wrote +65536 bytes from $0000 to $ffff
 
 .. describe:: mem <address_range>
@@ -433,7 +433,7 @@ Command Reference
 
   .. note::
 
-    Unlike the VICE monitor, Py65Mon's ``save`` command does not write
+    Unlike the VICE monitor, Nice65Mon's ``save`` command does not write
     the first two bytes as a Commodore-style load address.  It will start
     writing the data at byte 0, not byte 2.
 
@@ -489,7 +489,7 @@ Command Reference
 
     .version
 
-    Py65 Monitor
+    Nice65 Monitor
 
 .. describe:: width [<columns>]
 

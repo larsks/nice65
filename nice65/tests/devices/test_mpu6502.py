@@ -1,7 +1,7 @@
 import unittest
 import sys
-import py65.assembler
-import py65.devices.mpu6502
+import nice65.assembler
+import nice65.devices.mpu6502
 
 
 class Common6502Tests:
@@ -5711,7 +5711,7 @@ class Common6502Tests:
         self.assertEqual(0x0001, mpu.pc)
 
     def test_decorated_addressing_modes_are_valid(self):
-        valid_modes = [x[0] for x in py65.assembler.Assembler.Addressing]
+        valid_modes = [x[0] for x in nice65.assembler.Assembler.Addressing]
         mpu = self._make_mpu()
         for name, mode in mpu.disassemble:
             self.assertTrue(mode in valid_modes)
@@ -6037,7 +6037,7 @@ class MPUTests(unittest.TestCase, Common6502Tests):
         self.assertEqual(0x3f, mpu.a)
 
     def _get_target_class(self):
-        return py65.devices.mpu6502.MPU
+        return nice65.devices.mpu6502.MPU
 
 
 def test_suite():

@@ -40,9 +40,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Py65'
+project = 'Nice65'
 year = date.today().year
-copyright = u'2008-%d, Mike Naberezny and contributors' % year
+copyright = '2008-%d, Mike Naberezny, Lars Kellogg-Stedman, and contributors' % year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

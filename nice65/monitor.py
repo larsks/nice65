@@ -1,6 +1,6 @@
 #!/usr/bin/env python -u
 
-"""py65mon -- interact with a simulated 6502-based system
+"""nice65mon -- interact with a simulated 6502-based system
 
 Usage: %s [options]
 
@@ -22,15 +22,15 @@ import shlex
 import sys
 
 from asyncore import compact_traceback
-from py65.devices.mpu6502 import MPU as NMOS6502
-from py65.devices.mpu65c02 import MPU as CMOS65C02
-from py65.devices.mpu65org16 import MPU as V65Org16
-from py65.disassembler import Disassembler
-from py65.assembler import Assembler
-from py65.utils.addressing import AddressParser
-from py65.utils import console
-from py65.utils.conversions import itoa
-from py65.memory import ObservableMemory
+from nice65.devices.mpu6502 import MPU as NMOS6502
+from nice65.devices.mpu65c02 import MPU as CMOS65C02
+from nice65.devices.mpu65org16 import MPU as V65Org16
+from nice65.disassembler import Disassembler
+from nice65.assembler import Assembler
+from nice65.utils.addressing import AddressParser
+from nice65.utils import console
+from nice65.utils.conversions import itoa
+from nice65.memory import ObservableMemory
 
 try:
     from urllib2 import urlopen
@@ -294,10 +294,10 @@ class Monitor(cmd.Cmd):
         return cmd.Cmd.do_help(self, args)
 
     def help_version(self):
-        self._output("version\t\tDisplay Py65 version information.")
+        self._output("version\t\tDisplay Nice65 version information.")
 
     def do_version(self, args):
-        self._output("\nPy65 Monitor")
+        self._output("\nNice65 Monitor")
 
     def help_help(self):
         self._output("help\t\tPrint a list of available actions.")

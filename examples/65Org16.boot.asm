@@ -1,19 +1,19 @@
  .LIST
 
-; bootrom for py65 monitor in 65Org16 mode
+; bootrom for nice65 monitor in 65Org16 mode
 ; based on
 ; Intel Hex format loader by Ross Archer (9 February 2001, freeware)
 ; from http: http://www.6502.org/source/monitors/intelhex/intelhex.htm
 ;
 
 ; use this monitor like this:
-;   py65mon -m 65org16
+;   nice65mon -m 65org16
 ;   load bootrom.bin fe00
 ;   goto fe00
 
 START = $FFFFFe00
 
-; I/O is memory-mapped in py65:
+; I/O is memory-mapped in nice65:
 PUTC     = $f001
 GETC     = $f004
 
@@ -137,7 +137,7 @@ HDEROK  jsr     PUTSTRI
         .byte   0		; stop lemming-like march of the program ctr. thru data
         jmp     ENTRY_POINT	; jump to canonical entry point
 
-; For py65, the input routine will block until a character arrives
+; For nice65, the input routine will block until a character arrives
 GETSER  lda     GETC
         beq     GETSER
         rts

@@ -1,4 +1,4 @@
-from py65.utils.addressing import AddressParser
+from nice65.utils.addressing import AddressParser
 
 
 class Disassembler:
