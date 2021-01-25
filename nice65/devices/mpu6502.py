@@ -1,5 +1,5 @@
-from py65.utils.conversions import itoa
-from py65.utils.devices import make_instruction_decorator
+from nice65.utils.conversions import itoa
+from nice65.utils.devices import make_instruction_decorator
 
 
 class MPU:

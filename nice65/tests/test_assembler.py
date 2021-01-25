@@ -1,9 +1,9 @@
 import unittest
 import sys
-from py65.devices.mpu6502 import MPU
-from py65.devices.mpu65c02 import MPU as MPU65C02
-from py65.assembler import Assembler
-from py65.utils.addressing import AddressParser
+from nice65.devices.mpu6502 import MPU
+from nice65.devices.mpu65c02 import MPU as MPU65C02
+from nice65.assembler import Assembler
+from nice65.utils.addressing import AddressParser
 
 
 class AssemblerTests(unittest.TestCase):

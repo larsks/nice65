@@ -1,5 +1,5 @@
 import unittest
-from py65.memory import ObservableMemory
+from nice65.memory import ObservableMemory
 
 
 class ObservableMemoryTests(unittest.TestCase):

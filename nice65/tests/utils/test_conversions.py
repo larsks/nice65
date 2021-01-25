@@ -1,6 +1,6 @@
 import sys
 import unittest
-from py65.utils.conversions import itoa, convert_to_bin, convert_to_bcd
+from nice65.utils.conversions import itoa, convert_to_bin, convert_to_bcd
 
 
 class ConversionsTopLevelTests(unittest.TestCase):

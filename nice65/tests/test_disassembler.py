@@ -1,9 +1,9 @@
 import unittest
 import sys
-from py65.devices.mpu6502 import MPU
-from py65.devices.mpu65c02 import MPU as MPU65C02
-from py65.disassembler import Disassembler
-from py65.utils.addressing import AddressParser
+from nice65.devices.mpu6502 import MPU
+from nice65.devices.mpu65c02 import MPU as MPU65C02
+from nice65.disassembler import Disassembler
+from nice65.utils.addressing import AddressParser
 
 
 class DisassemblerTests(unittest.TestCase):
@@ -12,7 +12,7 @@ class DisassemblerTests(unittest.TestCase):
         '''
         TODO: This test fails with IndexError.  We should fix this
         so that it does not attempt to index memory out of range.
-        It does not affect most Py65 users because py65mon uses
+        It does not affect most Nice65 users because nice65mon uses
         ObservableMemory, which does not raise IndexError.
         '''
         mpu = MPU()

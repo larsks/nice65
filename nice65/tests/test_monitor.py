@@ -2,7 +2,7 @@ import unittest
 import sys
 import os
 import tempfile
-from py65.monitor import Monitor
+from nice65.monitor import Monitor
 
 try:
     from StringIO import StringIO
@@ -1096,7 +1096,7 @@ class MonitorTests(unittest.TestCase):
         mon = Monitor(stdout=stdout)
         mon.do_version('')
         out = stdout.getvalue()
-        self.assertTrue(out.startswith("\nPy65"))
+        self.assertTrue(out.startswith("\nNice65"))
 
     def test_help_version(self):
         stdout = StringIO()
@@ -1159,13 +1159,13 @@ class MonitorTests(unittest.TestCase):
     # command line options
 
     def test_argv_mpu(self):
-        argv = ['py65mon', '--mpu', '65c02']
+        argv = ['nice65mon', '--mpu', '65c02']
         stdout = StringIO()
         mon = Monitor(argv=argv, stdout=stdout)
         self.assertEqual('65C02', mon._mpu.name)
 
     def test_argv_mpu_invalid(self):
-        argv = ['py65mon', '--mpu', 'bad']
+        argv = ['nice65mon', '--mpu', 'bad']
         stdout = StringIO()
         try:
             Monitor(argv=argv, stdout=stdout)
@@ -1174,7 +1174,7 @@ class MonitorTests(unittest.TestCase):
         self.assertTrue("Fatal: no such MPU." in stdout.getvalue())
 
     def test_argv_goto(self):
-        argv = ['py65mon', '--goto', 'c000']
+        argv = ['nice65mon', '--goto', 'c000']
         stdout = StringIO()
         memory = bytearray(0x10000)
         memory[0xc000] = 0xea # c000 nop
@@ -1189,7 +1189,7 @@ class MonitorTests(unittest.TestCase):
             f.write(data)
             f.flush()
 
-            argv = ['py65mon', '--load', f.name]
+            argv = ['nice65mon', '--load', f.name]
             stdout = StringIO()
             mon = Monitor(argv=argv, stdout=stdout)
             self.assertEqual(list(data), mon._mpu.memory[:len(data)])
@@ -1205,14 +1205,14 @@ class MonitorTests(unittest.TestCase):
             f.write(rom)
             f.flush()
 
-            argv = ['py65mon', '--rom', f.name]
+            argv = ['nice65mon', '--rom', f.name]
             stdout = StringIO()
             mon = Monitor(argv=argv, stdout=stdout)
             self.assertEqual(list(rom), mon._mpu.memory[-len(rom):])
             self.assertEqual(0xf002, mon._mpu.pc)
 
     def test_argv_input(self):
-        argv = ['py65mon', '--input', 'abcd']
+        argv = ['nice65mon', '--input', 'abcd']
         stdout = StringIO()
         mon = Monitor(argv=argv, stdout=stdout)
         read_subscribers = mon._mpu.memory._read_subscribers
@@ -1220,7 +1220,7 @@ class MonitorTests(unittest.TestCase):
         self.assertTrue('getc' in repr(read_subscribers[0xabcd]))
 
     def test_argv_output(self):
-        argv = ['py65mon', '--output', 'dcba']
+        argv = ['nice65mon', '--output', 'dcba']
         stdout = StringIO()
         mon = Monitor(argv=argv, stdout=stdout)
         write_subscribers = mon._mpu.memory._write_subscribers
@@ -1238,7 +1238,7 @@ class MonitorTests(unittest.TestCase):
             f.write(rom)
             f.flush()
 
-            argv = ['py65mon', '--rom', f.name, '--mpu', '65c02',]
+            argv = ['nice65mon', '--rom', f.name, '--mpu', '65c02',]
             stdout = StringIO()
             mon = Monitor(argv=argv, stdout=stdout)
             self.assertEqual('65C02', mon._mpu.name)
