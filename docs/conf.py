@@ -170,8 +170,8 @@ htmlhelp_basename = 'testdoc'
 # (source start file, target name, title, author, document class
 # [howto/manual]).
 latex_documents = [
-    ('index', 'test.tex', ur'test Documentation',
-     ur'foo', 'manual'),
+    ('index', 'test.tex', 'test Documentation',
+     'foo', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
