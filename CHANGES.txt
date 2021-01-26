@@ -1,3 +1,9 @@
+2.0.0 (First nice65 fork)
+-------------------------
+
+- This is the first release of the nice65 fork, based on
+  py65 `cdec5df`.
+
 2.0.0.dev0 (Next Release)
 -------------------------
 
