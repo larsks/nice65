@@ -22,6 +22,7 @@ import shlex
 import sys
 
 from asyncore import compact_traceback
+
 from nice65.devices.mpu6502 import MPU as NMOS6502
 from nice65.devices.mpu65c02 import MPU as CMOS65C02
 from nice65.devices.mpu65org16 import MPU as V65Org16
@@ -925,12 +926,6 @@ class Monitor(cmd.Cmd):
 
 def main(args=None):
     c = Monitor()
-
-    try:
-        import readline
-        readline = readline  # pyflakes
-    except ImportError:
-        pass
 
     try:
         c.onecmd('version')
