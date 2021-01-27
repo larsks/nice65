@@ -25,9 +25,7 @@ if sys.platform[:3] == "win":
         for function signature compatibility and is ignored.
         """
         c = msvcrt.getch()
-        if isinstance(c, bytes): # Python 3
-            c = c.decode('latin-1')
-        return c
+        return c.decode('latin-1')
 
     def getch_noblock(stdin):
         """ Read one character from the Windows console without blocking.
@@ -147,15 +145,15 @@ else:
         Does not echo the character.
         """
         # Try to get a character with a non-blocking read.
-        char = ''
+        char = b''
         noncanonical_mode(stdin)
         # If we didn't get a character, ask again.
-        while char == '':
+        while char == b'':
             try:
                 # On OSX, calling read when no data is available causes the
                 # file handle to never return any future data, so we need to
                 # use select to make sure there is at least one char to read.
-                rd,wr,er = select([stdin], [], [], 0.01)
+                rd, wr, er = select([stdin], [], [], 0.01)
                 if rd != []:
                     char = stdin.read(1)
             except KeyboardInterrupt:
@@ -163,13 +161,13 @@ else:
                 raise
             except:
                 pass
-        return char
+        return char.decode()
 
     def getch_noblock(stdin):
         """ Read one character from stdin without blocking.  Does not echo the
         character.  If no character is available, an empty string is returned.
         """
-        char = ''
+        char = b''
 
         # Using non-blocking read
         noncanonical_mode(stdin)
@@ -188,9 +186,9 @@ else:
             pass
 
         # Convert linefeeds to carriage returns.
-        if len(char) and ord(char) == 10:
-            char = '\r'
-        return char
+        if len(char) and char == b'\n':
+            char = b'\r'
+        return char.decode()
 
 
 def line_input(prompt='', stdin=sys.stdin, stdout=sys.stdout):
