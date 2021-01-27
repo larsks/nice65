@@ -110,7 +110,7 @@ class Monitor(cmd.Cmd):
             # Restore the input mode.
             console.restore_mode()
             # Close the unbuffered input file handle, if it exists.
-            if self.unbuffered_stdin != None:
+            if self.unbuffered_stdin is not None:
                 if self.unbuffered_stdin != sys.stdin:
                     self.unbuffered_stdin.close()
         except:

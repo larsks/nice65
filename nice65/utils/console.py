@@ -53,7 +53,7 @@ else:
         as well as pasted input.  If unable to get an unbuffered
         version of stdin, return the original version.
         """
-        if stdin != None:
+        if stdin is not None:
             try:
                 # Reopen stdin with no buffer.
                 return os.fdopen(os.dup(stdin.fileno()), 'rb', 0)
@@ -135,7 +135,7 @@ else:
             # Restore the original system stdin.
             oldfd = oldstdin.fileno()
             # If there is a previous setting, restore it.
-            if oldattr != None:
+            if oldattr is not None:
                 # Restore it on the original system stdin.
                 termios.tcsetattr(oldfd, termios.TCSANOW, oldattr)
         except:
