@@ -68,12 +68,10 @@ class Monitor(cmd.Cmd):
         # unbuffered version of stdin, the original version is returned.
         self.unbuffered_stdin = console.get_unbuffered_stdin(stdin)
 
-        super().__init__(stdin=self.unbuffered_stdin, stdout=stdout)
-
         args = self._parse_args(argv)
 
-        # Check for any exceptions thrown during __init__ while
-        # processing the arguments.
+        super().__init__(stdin=self.unbuffered_stdin, stdout=stdout)
+
         try:
             if args.putc_addr is not None:
                 self.putc_addr = args.putc_addr
@@ -86,12 +84,6 @@ class Monitor(cmd.Cmd):
 
             self._reset(self.mpu_type, self.getc_addr, self.putc_addr)
 
-            if args.load is not None:
-                self.do_load("%r" % args.load)
-
-            if args.goto is not None:
-                self.do_goto(args.goto)
-
             if args.rom is not None:
                 # load a ROM and run from the reset vector
                 self.do_load("%r top" % args.rom)
@@ -100,6 +92,12 @@ class Monitor(cmd.Cmd):
                 dest = self._mpu.memory[reset] + \
                     (self._mpu.memory[reset + 1] << self.byteWidth)
                 self.do_goto("$%x" % dest)
+            else:
+                if args.load is not None:
+                    self.do_load("%r" % args.load)
+
+                if args.goto is not None:
+                    self.do_goto(args.goto)
         finally:
             # Restore input mode on any exception and then rethrow the
             # exception.
