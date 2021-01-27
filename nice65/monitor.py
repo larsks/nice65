@@ -14,8 +14,8 @@ Options:
 -o, --output <address> : define location of putc (default $f001)
 """
 
+import argparse
 import cmd
-import getopt
 import os
 import re
 import shlex
@@ -39,8 +39,11 @@ except ImportError: # Python 3
 
 class Monitor(cmd.Cmd):
 
-    Microprocessors = {'6502': NMOS6502, '65C02': CMOS65C02,
-                       '65Org16': V65Org16}
+    mpu_table = {
+        '6502': NMOS6502,
+        '65c02': CMOS65C02,
+        '65org16': V65Org16,
+    }
 
     def __init__(self, argv=None, stdin=None, stdout=None,
                        mpu_type=NMOS6502, memory=None,
@@ -49,9 +52,11 @@ class Monitor(cmd.Cmd):
         self.memory = memory
         self.putc_addr = putc_addr
         self.getc_addr = getc_addr
+        self.prompt = "."
+
+        self._address_parser = AddressParser()
         self._breakpoints = []
         self._width = 78
-        self.prompt = "."
         self._add_shortcuts()
 
         # Save the current system input mode so it can be restored after
@@ -64,37 +69,42 @@ class Monitor(cmd.Cmd):
         # unbuffered version of stdin, the original version is returned.
         self.unbuffered_stdin = console.get_unbuffered_stdin(stdin)
 
-        cmd.Cmd.__init__(self, stdin=self.unbuffered_stdin, stdout=stdout)
+        super().__init__(stdin=self.unbuffered_stdin, stdout=stdout)
+
+        args = self._parse_args(argv)
 
         # Check for any exceptions thrown during __init__ while
         # processing the arguments.
         try:
+            if args.putc_addr is not None:
+                self.putc_addr = args.putc_addr
 
-            if argv is None:
-                argv = sys.argv
-            load, rom, goto = self._parse_args(argv)
+            if args.getc_addr is not None:
+                self.getc_addr = args.getc_addr
+
+            if args.mpu_type is not None:
+                self.mpu_type = self.mpu_name_to_object(args.mpu_type)
 
             self._reset(self.mpu_type, self.getc_addr, self.putc_addr)
 
-            if load is not None:
-                self.do_load("%r" % load)
+            if args.load is not None:
+                self.do_load("%r" % args.load)
 
-            if goto is not None:
-                self.do_goto(goto)
+            if args.goto is not None:
+                self.do_goto(args.goto)
 
-            if rom is not None:
+            if args.rom is not None:
                 # load a ROM and run from the reset vector
-                self.do_load("%r top" % rom)
+                self.do_load("%r top" % args.rom)
                 physMask = self._mpu.memory.physMask
                 reset = self._mpu.RESET & physMask
                 dest = self._mpu.memory[reset] + \
                     (self._mpu.memory[reset + 1] << self.byteWidth)
                 self.do_goto("$%x" % dest)
-        except:
+        finally:
             # Restore input mode on any exception and then rethrow the
             # exception.
             console.restore_mode()
-            raise
 
     def __del__(self):
         try:
@@ -107,53 +117,62 @@ class Monitor(cmd.Cmd):
         except:
             pass
 
+    def mpu_name_to_object(self, v):
+        try:
+            return self.mpu_table[v.lower()]
+        except KeyError:
+            raise ValueError(v)
 
     def _parse_args(self, argv):
-        try:
-            shortopts = 'hi:o:m:l:r:g:'
-            longopts = ['help', 'mpu=', 'input=', 'output=', 'load=', 'rom=', 'goto=']
-            options, args = getopt.getopt(argv[1:], shortopts, longopts)
-        except getopt.GetoptError as exc:
-            self._output(exc.args[0])
-            self._usage()
-            self._exit(1)
+        p = argparse.ArgumentParser()
 
-        load, rom, goto = None, None, None
+        p.add_argument(
+            "--mpu-type",
+            "--mpu",
+            "-m",
+            metavar="DEVICE",
+            choices=self.mpu_table.keys(),
+            help="Choose which MPU device to simulate (default is 6502)",
+            default="6502",
+        )
+        p.add_argument(
+            "--load",
+            "-l",
+            metavar="FILE",
+            help="Load a file at address 0"
+        )
+        p.add_argument(
+            "--rom",
+            "-r",
+            metavar="FILE",
+            help="Load a rom at the top of address space and reset into it",
+        )
+        p.add_argument(
+            "--goto",
+            "-g",
+            metavar="ADDRESS",
+            help="Perform a goto command after loading any files",
+        )
+        p.add_argument(
+            "--getc-addr",
+            "--getc",
+            "-G",
+            metavar="ADDRESS",
+            type=self._address_parser.number,
+            help="Define location of memory-mapped getc routine (default $f004)",
+            default="$f004",
+        )
+        p.add_argument(
+            "--putc-addr",
+            "--putc",
+            "-P",
+            metavar="ADDRESS",
+            type=self._address_parser.number,
+            help="Define location of memory-mapped putc routine (default $f001)",
+            default="$f001",
+        )
 
-        for opt, value in options:
-            if opt in ('-i', '--input'):
-                self.getc_addr = int(value, 16)
-
-            if opt in ('-o', '--output'):
-                self.putc_addr = int(value, 16)
-
-            if opt in ('-m', '--mpu'):
-                mpu_type = self._get_mpu(value)
-                if mpu_type is None:
-                    mpus = sorted(self.Microprocessors.keys())
-                    msg = "Fatal: no such MPU. Available MPUs: %s"
-                    self._output(msg % ', '.join(mpus))
-                    sys.exit(1)
-                self.mpu_type = mpu_type
-
-            if opt in ("-h", "--help"):
-                self._usage()
-                self._exit(0)
-
-            if opt in ('-l', '--load'):
-                load = value
-
-            if opt in ('-r', '--rom'):
-                rom = value
-
-            if opt in ('-g', '--goto'):
-                goto = value
-
-        return load, rom, goto
-
-    def _usage(self):
-        usage = __doc__ % sys.argv[0]
-        self._output(usage)
+        return p.parse_args(args=argv)
 
     def onecmd(self, line):
         line = self._preprocess_line(line)
@@ -186,7 +205,6 @@ class Monitor(cmd.Cmd):
         self.byteMask = self._mpu.byteMask
         if getc_addr and putc_addr:
             self._install_mpu_observers(getc_addr, putc_addr)
-        self._address_parser = AddressParser()
         self._disassembler = Disassembler(self._mpu, self._address_parser)
         self._assembler = Assembler(self._mpu, self._address_parser)
 
@@ -252,7 +270,7 @@ class Monitor(cmd.Cmd):
     def _get_mpu(self, name):
         requested = name.lower()
         mpu = None
-        for key, klass in self.Microprocessors.items():
+        for key, klass in self.mpu_table.items():
             if key.lower() == requested:
                 mpu = klass
                 break
@@ -312,7 +330,7 @@ class Monitor(cmd.Cmd):
 
     def do_mpu(self, args):
         def available_mpus():
-            mpus = list(self.Microprocessors.keys())
+            mpus = list(self.mpu_table.keys())
             mpus.sort()
             self._output("Available MPUs: %s" % ', '.join(mpus))
 
