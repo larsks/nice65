@@ -33,10 +33,8 @@ from nice65.utils import console
 from nice65.utils.conversions import itoa
 from nice65.memory import ObservableMemory
 
-try:
-    from urllib2 import urlopen
-except ImportError: # Python 3
-    from urllib.request import urlopen
+from urllib.request import urlopen
+
 
 class Monitor(cmd.Cmd):
 
