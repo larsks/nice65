@@ -448,7 +448,11 @@ class MonitorTests(unittest.TestCase):
         self.assertEqual(0xAA, mon._mpu.memory[0xc001])
         self.assertEqual(0x00, mon._mpu.memory[0xc002])
         out = stdout.getvalue()
-        self.assertTrue(out.startswith('Wrote +2 bytes from $c000 to $c001'))
+
+        # XXX: we get better errors from pytest using assert and
+        # out == expected. Probably want to update all the self.assert*
+        # stuff here to use that syntax instead.
+        assert out == 'Wrote +2 bytes from $c000 to $c001\n'
 
     def test_do_fill_will_fill_an_address_range_with_byte_sequence(self):
         stdout = StringIO()

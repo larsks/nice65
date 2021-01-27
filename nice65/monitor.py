@@ -257,7 +257,7 @@ class Monitor(cmd.Cmd):
                 line = command
                 break
 
-            pattern = '^%s\s+' % re.escape(shortcut)
+            pattern = r'^%s\s+' % re.escape(shortcut)
             matches = re.match(pattern, line)
             if matches:
                 start, end = matches.span()
@@ -598,7 +598,7 @@ class Monitor(cmd.Cmd):
         if args == '':
             return
 
-        pairs = re.findall('([^=,\s]*)=([^=,\s]*)', args)
+        pairs = re.findall(r'([^=,\s]*)=([^=,\s]*)', args)
         if pairs == []:
             return self._output("Syntax error: %s" % args)
 
@@ -691,19 +691,9 @@ class Monitor(cmd.Cmd):
         else:
             start = self._mpu.pc
 
-        if self.byteWidth == 8:
-            if isinstance(bytes, str):
-                bytes = map(ord, bytes)
-            else: # Python 3
-                bytes = [ b for b in bytes ]
-
-        elif self.byteWidth == 16:
-            def format(msb, lsb):
-                if isinstance(bytes, str):
-                    return (ord(msb) << 8) + ord(lsb)
-                else: # Python 3
-                    return (msb << 8) + lsb
-            bytes = list(map(format, bytes[0::2], bytes[1::2]))
+        if self.byteWidth == 16:
+            bytes = [(msb << 8) + lsb
+                     for msb, lsb in zip(bytes[0::2], bytes[1::2])]
 
         self._fill(start, start, bytes)
 
@@ -762,9 +752,7 @@ class Monitor(cmd.Cmd):
         length, index = len(filler), 0
 
         if start == end:
-            end = start + length - 1
-            if (end > self.addrMask):
-                end = self.addrMask
+            end = min(self.addrMask, start + length - 1)
 
         while address <= end:
             address &= self.addrMask
@@ -774,9 +762,11 @@ class Monitor(cmd.Cmd):
                 index = 0
             address += 1
 
-        fmt = (end - start + 1, start, end)
-        starttoend = "$" + self.addrFmt + " to $" + self.addrFmt
-        self._output(("Wrote +%d bytes from " + starttoend) % fmt)
+        self._output("Wrote +%d bytes from $%s to $%s" % (
+            end - start + 1,
+            self.addrFmt % start,
+            self.addrFmt % end,
+        ))
 
     def help_mem(self):
         self._output("mem <address_range>")
