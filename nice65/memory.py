@@ -1,4 +1,5 @@
 from collections import defaultdict
+from contextlib import contextmanager
 
 
 class ObservableMemory:
@@ -14,6 +15,8 @@ class ObservableMemory:
 
         self._read_subscribers = defaultdict(list)
         self._write_subscribers = defaultdict(list)
+        self._exec_subscribers = defaultdict(list)
+        self._read_for_exec = False
 
     def __setitem__(self, address, value):
         if isinstance(address, slice):
@@ -38,8 +41,12 @@ class ObservableMemory:
             return [ self[n] for n in r ]
 
         address &= self.physMask
-        callbacks = self._read_subscribers[address]
         final_result = None
+
+        if self._read_for_exec:
+            callbacks = self._exec_subscribers[address]
+        else:
+            callbacks = self._read_subscribers[address]
 
         for callback in callbacks:
             result = callback(address)
@@ -68,6 +75,19 @@ class ObservableMemory:
             if callback not in callbacks:
                 callbacks.append(callback)
 
+    def subscribe_to_exec(self, address_range, callback):
+        for address in address_range:
+            address &= self.physMask
+            callbacks = self._exec_subscribers.setdefault(address, [])
+            if callback not in callbacks:
+                callbacks.append(callback)
+
     def write(self, start_address, bytes):
         start_address &= self.physMask
         self._subject[start_address:start_address + len(bytes)] = bytes
+
+    @contextmanager
+    def read_for_exec(self):
+        self._read_for_exec = True
+        yield
+        self._read_for_exec = False
