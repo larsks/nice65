@@ -18,6 +18,9 @@ class ObservableMemory:
         self._exec_subscribers = defaultdict(list)
         self._read_for_exec = False
 
+    def __len__(self):
+        return len(self._subject)
+
     def __setitem__(self, address, value):
         if isinstance(address, slice):
             r = range(*address.indices(self.physMask + 1))
