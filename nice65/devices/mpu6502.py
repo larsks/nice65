@@ -1,5 +1,24 @@
+from contextlib import contextmanager
+
 from nice65.utils.conversions import itoa
 from nice65.utils.devices import make_instruction_decorator
+
+
+@contextmanager
+def try_read_for_exec(memory):
+    '''take advantage of exec callbacks if they're available.
+
+    The exec callback support in nice65.memory.ObservableMemory is
+    implemented via a context manager, but that won't be available when
+    mpu.memory is a simple array. This context manager acts as a wrapper
+    to absorb the AttributeError.
+    '''
+
+    try:
+        with memory.read_for_exec():
+            yield
+    except AttributeError:
+        yield
 
 
 class MPU:
@@ -533,7 +552,8 @@ class MPU:
         self.stPush(self.p | self.BREAK | self.UNUSED)
 
         self.p |= self.INTERRUPT
-        self.pc = self.WordAt(self.IRQ)
+        with try_read_for_exec(self.memory):
+            self.pc = self.WordAt(self.IRQ)
 
     @instruction(name="ORA", mode="inx", cycles=6)
     def inst_0x01(self):
@@ -614,7 +634,8 @@ class MPU:
     @instruction(name="JSR", mode="abs", cycles=6)
     def inst_0x20(self):
         self.stPushWord((self.pc + 1) & self.addrMask)
-        self.pc = self.WordAt(self.pc)
+        with try_read_for_exec(self.memory):
+            self.pc = self.WordAt(self.pc)
 
     @instruction(name="AND", mode="inx", cycles=6)
     def inst_0x21(self):
@@ -737,7 +758,8 @@ class MPU:
 
     @instruction(name="JMP", mode="abs", cycles=3)
     def inst_0x4c(self):
-        self.pc = self.WordAt(self.pc)
+        with try_read_for_exec(self.memory):
+            self.pc = self.WordAt(self.pc)
 
     @instruction(name="EOR", mode="abs", cycles=4)
     def inst_0x4d(self):
