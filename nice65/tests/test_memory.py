@@ -13,6 +13,24 @@ class ObservableMemoryTests(unittest.TestCase):
         mem[0xC000] = 0xAB
         self.assertEqual(0xAB, subject[0xC000])
 
+    def test_read_for_exec_calls_exec_callbacks(self):
+        subject = self._make_subject()
+        mem = ObservableMemory(subject=subject)
+        called = False
+
+        def exec_subscriber(address):
+            nonlocal called
+            called = True
+            return 0xff
+
+        mem.subscribe_to_exec([0xc000], exec_subscriber)
+
+        with mem.read_for_exec():
+            value = mem[0xc000]
+
+        assert called
+        assert value == 0xff
+
     def test___setitem__ignores_subscribers_returning_none(self):
         subject = self._make_subject()
         mem = ObservableMemory(subject=subject)
